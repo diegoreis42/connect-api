@@ -15,9 +15,9 @@ post and comment using only API clients (a.k.a Postman, curl, etc) as god planne
 
 - [] User authentication
 - [] User posts, crud
-- [] Comment in posts, crud
+- [] Make friends
 
 ### Extras
 - [] Feed route
-- [] Make friends
+- [] Comment in posts, crud
 - [] Search posts by correlation
