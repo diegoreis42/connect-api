@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/user"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/diegoreis42/connect-api/internal/auth"
 	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var port string
@@ -20,6 +24,21 @@ func init() {
 }
 
 func main() {
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s",
+		os.Getenv("DB_HOST"),
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DATABASE"),
+		os.Getenv("DB_PORT"),
+	)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	db.AutoMigrate(&user.User{})
+
 	engine := gin.Default()
 
 	authMiddleware, err := jwt.New(auth.InitParams())

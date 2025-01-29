@@ -77,7 +77,6 @@ func authenticator() func(c *gin.Context) (interface{}, error) {
 		if (userID == "admin" && password == "admin") || (userID == "test" && password == "test") {
 			return &user.User{
 				UserName:  userID,
-				LastName:  "Bo-Yi",
 				FirstName: "Wu",
 			}, nil
 		}

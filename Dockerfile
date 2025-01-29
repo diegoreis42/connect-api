@@ -1,26 +1,32 @@
+# Use an official Go image as the base builder
+FROM golang:1.23-bookworm AS builder
 
+# Set the working directory inside the container
+WORKDIR /app
 
-# Use Go 1.23 bookworm as base image
-FROM golang:1.23-bookworm AS base
-
-# Move to working directory /build
-WORKDIR /build
-
-# Copy the go.mod and go.sum files to the /build directory
+# Copy go.mod and go.sum to leverage caching
 COPY go.mod go.sum ./
 
-# Install dependencies
+# Download and cache dependencies
 RUN go mod download
 
-# Copy the entire source code into the container
+# Copy the source code
 COPY . .
 
-# Build the application
-RUN go build -o connect-api
+# Build the application with optimizations
+RUN go build -o /connect-api
 
-# Document the port that may need to be published
-EXPOSE 8000
+# Use a minimal runtime image for the final container
+FROM debian:bookworm-slim AS runtime
 
-# Start the application
-CMD ["/build/connect-api"]
+# Set the working directory inside the container
+WORKDIR /app
 
+# Copy the compiled binary from the builder stage
+COPY --from=builder /connect-api /app/connect-api
+
+# Expose the application port
+EXPOSE 8080
+
+# Run the application
+CMD ["/app/connect-api"]
