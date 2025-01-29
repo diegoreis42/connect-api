@@ -1,0 +1,14 @@
+info:
+  contact: {}
+paths:
+  /register:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: Register User
+      tags:
+      - user
+swagger: "2.0"

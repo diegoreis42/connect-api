@@ -2,12 +2,10 @@ package user
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"strconv"
 
 	"github.com/diegoreis42/connect-api/internal/db"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -24,26 +22,6 @@ type UserInput struct {
 	UserName  string `json:"username" binding:"required"`
 	FirstName string `json:"first_name" binding:"required"`
 	Password  string `json:"password" binding:"required"`
-}
-
-func RegisterHandler(c *gin.Context) {
-	var input UserInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
-	}
-
-	user, err := register(input)
-	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"user": gin.H{
-		"id":         user.ID,
-		"username":   user.UserName,
-		"first_name": user.FirstName,
-	}})
 }
 
 func register(input UserInput) (User, error) {
