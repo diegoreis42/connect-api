@@ -13,7 +13,7 @@ post and comment using only API clients (a.k.a Postman, curl, etc) as god planne
 
 ### Roadmap
 
-- [] User authentication
+- [X] User authentication
 - [] User posts, crud
 - [] Make friends
 
