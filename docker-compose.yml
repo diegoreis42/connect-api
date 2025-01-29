@@ -5,5 +5,5 @@ services:
             dockerfile: Dockerfile
         ports:
             - '8080:8080'
-        volumes:
-            - ./.env:/build/.env
+        env_file:
+            - "./.env"
