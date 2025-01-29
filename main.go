@@ -1,17 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"os/user"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/diegoreis42/connect-api/internal/auth"
+	"github.com/diegoreis42/connect-api/internal/db"
+	"github.com/diegoreis42/connect-api/internal/user"
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 var port string
@@ -24,20 +22,12 @@ func init() {
 }
 
 func main() {
-	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s",
-		os.Getenv("DB_HOST"),
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_DATABASE"),
-		os.Getenv("DB_PORT"),
-	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
+	db.Init()
 
-	db.AutoMigrate(&user.User{})
+	err := db.DB.AutoMigrate(&user.User{})
+	if err != nil {
+		log.Fatalf("Migration failed: %v", err)
+	}
 
 	engine := gin.Default()
 
@@ -56,6 +46,7 @@ func main() {
 
 func registerRoute(r *gin.Engine, handle *jwt.GinJWTMiddleware) {
 	r.POST("/login", handle.LoginHandler)
+	r.POST("/register", user.RegisterHandler)
 	r.NoRoute(handle.MiddlewareFunc(), auth.HandleNoRoute())
 
 	authRoute := r.Group("/auth", handle.MiddlewareFunc())
