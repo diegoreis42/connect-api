@@ -7,7 +7,7 @@ FROM golang:1.23-bookworm AS base
 WORKDIR /build
 
 # Copy the go.mod and go.sum files to the /build directory
-COPY src/go.mod src/go.sum ./
+COPY go.mod go.sum ./
 
 # Install dependencies
 RUN go mod download
