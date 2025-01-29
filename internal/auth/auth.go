@@ -2,6 +2,7 @@ package auth
 
 import (
 	"log"
+	"os"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -20,7 +21,7 @@ func InitParams() *jwt.GinJWTMiddleware {
 
 	return &jwt.GinJWTMiddleware{
 		Realm:       "Connect API",
-		Key:         []byte("secret key"),
+		Key:         []byte(os.Getenv("JWT_KEY")),
 		Timeout:     time.Hour,
 		MaxRefresh:  time.Hour,
 		IdentityKey: identityKey,
