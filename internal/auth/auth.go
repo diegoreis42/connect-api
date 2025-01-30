@@ -6,8 +6,11 @@ import (
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/diegoreis42/connect-api/internal/db"
 	"github.com/diegoreis42/connect-api/internal/user"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 var identityKey = "id"
@@ -29,7 +32,6 @@ func InitParams() *jwt.GinJWTMiddleware {
 
 		IdentityHandler: identityHandler(),
 		Authenticator:   authenticator(),
-		Authorizator:    authorizator(),
 		Unauthorized:    unauthorized(),
 		TokenLookup:     "header: Authorization, query: token, cookie: jwt",
 		TokenHeadName:   "Bearer",
@@ -50,7 +52,8 @@ func payloadFunc() func(data interface{}) jwt.MapClaims {
 	return func(data interface{}) jwt.MapClaims {
 		if v, ok := data.(*user.User); ok {
 			return jwt.MapClaims{
-				identityKey: v.UserName,
+				"id":       v.ID,
+				"username": v.UserName,
 			}
 		}
 		return jwt.MapClaims{}
@@ -60,8 +63,19 @@ func payloadFunc() func(data interface{}) jwt.MapClaims {
 func identityHandler() func(c *gin.Context) interface{} {
 	return func(c *gin.Context) interface{} {
 		claims := jwt.ExtractClaims(c)
+		id, ok := claims["id"].(float64)
+		if !ok {
+			return nil
+		}
+		username, ok := claims["username"].(string)
+		if !ok {
+			return nil
+		}
 		return &user.User{
-			UserName: claims[identityKey].(string),
+			Model: gorm.Model{
+				ID: uint(id),
+			},
+			UserName: username,
 		}
 	}
 }
@@ -69,30 +83,31 @@ func identityHandler() func(c *gin.Context) interface{} {
 func authenticator() func(c *gin.Context) (interface{}, error) {
 	return func(c *gin.Context) (interface{}, error) {
 		var loginVals login
-		if err := c.ShouldBind(&loginVals); err != nil {
-			return "", jwt.ErrMissingLoginValues
+		if err := c.ShouldBindJSON(&loginVals); err != nil {
+			return nil, jwt.ErrMissingLoginValues
 		}
-		userID := loginVals.Username
+
+		username := loginVals.Username
 		password := loginVals.Password
 
-		if (userID == "admin" && password == "admin") || (userID == "test" && password == "test") {
-			return &user.User{
-				UserName:  userID,
-				FirstName: "Wu",
-			}, nil
+		var foundUser user.User
+		if err := db.DB.Where("username = ?", username).First(&foundUser).Error; err != nil {
+			return nil, jwt.ErrFailedAuthentication
 		}
-		return nil, jwt.ErrFailedAuthentication
+
+		// Compare hashed password
+		if err := bcrypt.CompareHashAndPassword(foundUser.Password, []byte(password)); err != nil {
+			return nil, jwt.ErrFailedAuthentication
+		}
+
+		// Return the user payload
+		return &user.User{
+			Model:    foundUser.Model, // Includes ID
+			UserName: foundUser.UserName,
+		}, nil
 	}
 }
 
-func authorizator() func(data interface{}, c *gin.Context) bool {
-	return func(data interface{}, c *gin.Context) bool {
-		if v, ok := data.(*user.User); ok && v.UserName == "admin" {
-			return true
-		}
-		return false
-	}
-}
 
 func unauthorized() func(c *gin.Context, code int, message string) {
 	return func(c *gin.Context, code int, message string) {

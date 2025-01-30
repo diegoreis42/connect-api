@@ -11,4 +11,16 @@ paths:
       summary: Register User
       tags:
       - user
+  /user/:user_id/follow:
+    patch:
+      responses: {}
+      summary: Follow new User
+      tags:
+      - user
+  /user/:user_id/unfollow:
+    patch:
+      responses: {}
+      summary: Unfollow an User
+      tags:
+      - user
 swagger: "2.0"

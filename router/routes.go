@@ -22,9 +22,11 @@ func initializeRoutes(router *gin.Engine, jwtHandle *jwt.GinJWTMiddleware) {
 	}
 
 	// Authenticated routes
-	v1_auth := router.Group(basePath+"/auth", jwtHandle.MiddlewareFunc())
+	v1_auth := router.Group(basePath, jwtHandle.MiddlewareFunc())
 	{
 		v1_auth.GET("/refresh_token", jwtHandle.RefreshHandler)
+		v1_auth.PATCH("/user/:user_id/follow", user.FollowUser)
+		v1_auth.PATCH("/user/:user_id/unfollow", user.UnfollowUser)
 	}
 
 	router.NoRoute(jwtHandle.MiddlewareFunc(), auth.HandleNoRoute())

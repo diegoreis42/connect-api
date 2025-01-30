@@ -29,6 +29,24 @@ const docTemplate = `{
                 "summary": "Register User",
                 "responses": {}
             }
+        },
+        "/user/:user_id/follow": {
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Follow new User",
+                "responses": {}
+            }
+        },
+        "/user/:user_id/unfollow": {
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Unfollow an User",
+                "responses": {}
+            }
         }
     }
 }`

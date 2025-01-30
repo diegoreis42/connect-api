@@ -15,7 +15,8 @@ type User struct {
 	UserName  string  `gorm:"column:username;unique"`
 	FirstName string  `gorm:"column:first_name"`
 	Password  []byte  `json:"-"`
-	Friends   []*User `gorm:"many2many:user_friends"`
+	Followers []*User `gorm:"many2many:user_followers"`
+	Following []*User `gorm:"many2many:following_users"`
 }
 
 type UserInput struct {
@@ -40,7 +41,8 @@ func register(input UserInput) (User, error) {
 		UserName:  input.UserName,
 		FirstName: input.FirstName,
 		Password:  hashedPassword,
-		Friends:   []*User{},
+		Following: []*User{},
+		Followers: []*User{},
 	}
 
 	result := db.DB.Create(&user)
