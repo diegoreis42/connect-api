@@ -8,7 +8,7 @@ post and comment using only API clients (a.k.a Postman, curl, etc) as god planne
 - Gin
 - Gorm
 - Docker
-- Traefik
+- Nginx
 
 ### Roadmap
 
@@ -16,7 +16,3 @@ post and comment using only API clients (a.k.a Postman, curl, etc) as god planne
 - [X] User posts, crud
 - [X] Make friends
 
-### Extras
-- [] Feed route
-- [] Comment in posts, crud
-- [] Search posts by correlation
