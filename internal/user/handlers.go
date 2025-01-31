@@ -120,6 +120,48 @@ func AddPost(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Post created successfully", "post": post})
 }
 
+// @Summary Update a post
+// @Tags post
+// @Accept json
+// @Produce json
+// @Success 200 {object} Post
+// @Router /posts/:post_id [patch]
+func UpdatePost(c *gin.Context) {
+	user, err := identityHandler(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	postID := c.Param("post_id")
+
+	var post Post
+	if err := db.DB.Where("id = ?", postID).First(&post).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+		return
+	}
+
+	// Ensure only the owner can update the post
+	if post.UserID != user.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You can only update your own posts"})
+		return
+	}
+
+	var input PostInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	post.Content = input.Content
+	if err := db.DB.Save(&post).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update post"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Post updated successfully", "post": post})
+}
+
 func identityHandler(c *gin.Context) (User, error) {
 
 	claims := jwt.ExtractClaims(c)
