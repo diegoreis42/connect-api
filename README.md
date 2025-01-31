@@ -8,10 +8,12 @@ Connect-api aims to solve this, post and comment using only API clients (a.k.a P
 
 After cloning this project, you just have to run:
 ```bash
+cp .env-example .env
+
 docker compose up
 ```
 
-The swagger docs should be available in   http://localhost/swagger/index.html
+The swagger docs should be available in http://localhost/swagger/index.html. But for now is recommended to export the json to PostmanAPI and use it from there.
 
 ### Techs
 - Golang
