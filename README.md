@@ -15,7 +15,7 @@ post and comment using only API clients (a.k.a Postman, curl, etc) as god planne
 
 - [X] User authentication
 - [] User posts, crud
-- [] Make friends
+- [X] Make friends
 
 ### Extras
 - [] Feed route
