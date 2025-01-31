@@ -1,6 +1,75 @@
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  user.Post:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      userID:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
+  /post/:post_id:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.Post'
+      summary: Get Post
+      tags:
+      - post
+  /posts:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.Post'
+      summary: Add a new post
+      tags:
+      - post
+  /posts/:post_id:
+    delete:
+      responses:
+        "200":
+          description: OK
+      summary: Delete a post
+      tags:
+      - post
+    patch:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.Post'
+      summary: Update a post
+      tags:
+      - post
   /register:
     post:
       consumes:
