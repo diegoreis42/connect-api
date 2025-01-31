@@ -17,6 +17,7 @@ type User struct {
 	Password  []byte  `json:"-"`
 	Followers []*User `gorm:"many2many:user_followers"`
 	Following []*User `gorm:"many2many:following_users"`
+	Posts     []Post  `gorm:"foreignKey:UserID"`
 }
 
 type UserInput struct {

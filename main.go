@@ -11,7 +11,7 @@ import (
 func main() {
 	db.Init()
 
-	err := db.DB.AutoMigrate(&user.User{})
+	err := db.DB.AutoMigrate(&user.User{}, &user.Post{})
 	if err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}

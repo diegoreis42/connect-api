@@ -27,6 +27,7 @@ func initializeRoutes(router *gin.Engine, jwtHandle *jwt.GinJWTMiddleware) {
 		v1_auth.GET("/refresh_token", jwtHandle.RefreshHandler)
 		v1_auth.PATCH("/user/:user_id/follow", user.FollowUser)
 		v1_auth.PATCH("/user/:user_id/unfollow", user.UnfollowUser)
+		v1_auth.POST("/post", user.AddPost)
 	}
 
 	router.NoRoute(jwtHandle.MiddlewareFunc(), auth.HandleNoRoute())

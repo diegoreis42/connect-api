@@ -88,6 +88,38 @@ func UnfollowUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User unfollowed successfully"})
 }
 
+// @Summary Add a new post
+// @Tags post
+// @Accept json
+// @Produce json
+// @Success 201 {object} Post
+// @Router /posts [post]
+func AddPost(c *gin.Context) {
+	user, err := identityHandler(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	var input PostInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	post := Post{
+		Content: input.Content,
+		UserID:  user.ID,
+	}
+
+	if err := db.DB.Create(&post).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create post"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Post created successfully", "post": post})
+}
+
 func identityHandler(c *gin.Context) (User, error) {
 
 	claims := jwt.ExtractClaims(c)
