@@ -29,6 +29,7 @@ func initializeRoutes(router *gin.Engine, jwtHandle *jwt.GinJWTMiddleware) {
 		v1_auth.PATCH("/user/:user_id/unfollow", user.UnfollowUser)
 		v1_auth.POST("/post", user.AddPost)
 		v1_auth.PATCH("/post/:post_id", user.UpdatePost)
+		v1_auth.DELETE("/post/:post_id", user.DeletePost)
 	}
 
 	router.NoRoute(jwtHandle.MiddlewareFunc(), auth.HandleNoRoute())

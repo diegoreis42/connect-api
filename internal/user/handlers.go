@@ -162,6 +162,39 @@ func UpdatePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Post updated successfully", "post": post})
 }
 
+// @Summary Delete a post
+// @Tags post
+// @Success 200
+// @Router /posts/:post_id [delete]
+func DeletePost(c *gin.Context) {
+	user, err := identityHandler(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	postID := c.Param("post_id")
+
+	var post Post
+	if err := db.DB.Where("id = ?", postID).First(&post).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+		return
+	}
+
+	// Ensure only the owner can delete the post
+	if post.UserID != user.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You can only delete your own posts"})
+		return
+	}
+
+	if err := db.DB.Delete(&post).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not delete post"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully"})
+}
+
 func identityHandler(c *gin.Context) (User, error) {
 
 	claims := jwt.ExtractClaims(c)
