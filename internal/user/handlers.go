@@ -195,6 +195,22 @@ func DeletePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully"})
 }
 
+// @Summary Get Post
+// @Tags post
+// @Success 200 {object} Post
+// @Router /post/:post_id [get]
+func GetPost(c *gin.Context) {
+	postID := c.Param("post_id")
+	var post Post
+
+	if err := db.DB.Where("id = ?", postID).First(&post).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, post)
+}
+
 func identityHandler(c *gin.Context) (User, error) {
 
 	claims := jwt.ExtractClaims(c)

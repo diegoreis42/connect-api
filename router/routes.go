@@ -19,6 +19,7 @@ func initializeRoutes(router *gin.Engine, jwtHandle *jwt.GinJWTMiddleware) {
 	{
 		v1.POST("/login", jwtHandle.LoginHandler)
 		v1.POST("/register", user.RegisterHandler)
+		v1.GET("/post/:post_id", user.GetPost)
 	}
 
 	// Authenticated routes
