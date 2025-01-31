@@ -9,12 +9,11 @@ post and comment using only API clients (a.k.a Postman, curl, etc) as god planne
 - Gorm
 - Docker
 - Traefik
-- Heavy test suite
 
 ### Roadmap
 
 - [X] User authentication
-- [] User posts, crud
+- [X] User posts, crud
 - [X] Make friends
 
 ### Extras
