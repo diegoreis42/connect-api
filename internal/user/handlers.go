@@ -136,14 +136,8 @@ func UpdatePost(c *gin.Context) {
 	postID := c.Param("post_id")
 
 	var post Post
-	if err := db.DB.Where("id = ?", postID).First(&post).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
-		return
-	}
-
-	// Ensure only the owner can update the post
-	if post.UserID != user.ID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "You can only update your own posts"})
+	if err := db.DB.Where("id = ? AND user_id = ?", postID, user.ID).First(&post).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found or not owned by user"})
 		return
 	}
 
@@ -176,14 +170,8 @@ func DeletePost(c *gin.Context) {
 	postID := c.Param("post_id")
 
 	var post Post
-	if err := db.DB.Where("id = ?", postID).First(&post).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
-		return
-	}
-
-	// Ensure only the owner can delete the post
-	if post.UserID != user.ID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "You can only delete your own posts"})
+	if err := db.DB.Where("id = ? AND user_id = ?", postID, user.ID).First(&post).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found or not owned by user"})
 		return
 	}
 
