@@ -43,7 +43,7 @@ func RegisterHandler(c *gin.Context) {
 // @Sucess 200
 // @Router /user/:user_id/follow [patch]
 func FollowUser(c *gin.Context) {
-	currentUser, err := identityHandler(c)
+	_, err := identityHandler(c)
 	if err != nil {
 		c.JSON(http.StatusNotAcceptable, gin.H{"error": err})
 	}
@@ -51,10 +51,6 @@ func FollowUser(c *gin.Context) {
 	user_id := c.Param("user_id")
 
 	var user, follower User
-	if err := db.DB.Where("username = ?", currentUser.UserName).First(&follower).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Current user not found"})
-		return
-	}
 
 	if err := db.DB.Where("id = ?", user_id).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User to follow not found"})
@@ -72,7 +68,7 @@ func FollowUser(c *gin.Context) {
 // @Sucess 200
 // @Router /user/:user_id/unfollow [patch]
 func UnfollowUser(c *gin.Context) {
-	currentUser, err := identityHandler(c)
+	_, err := identityHandler(c)
 	if err != nil {
 		c.JSON(http.StatusNotAcceptable, gin.H{"error": err})
 	}
@@ -80,10 +76,6 @@ func UnfollowUser(c *gin.Context) {
 	user_id := c.Param("user_id")
 
 	var user, follower User
-	if err := db.DB.Where("username = ?", currentUser.UserName).First(&follower).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Current user not found"})
-		return
-	}
 
 	if err := db.DB.Where("id = ?", user_id).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User to unfollow not found"})
